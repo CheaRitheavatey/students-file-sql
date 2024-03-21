@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import ttk
+import mysql.connector
 
 class StudentData:
     def __init__(self, name, major, sex, grade):
@@ -15,6 +16,14 @@ class StudentAnalyzer(tk.Tk):
         self.title("Student Data Analyzer")
 
         self.student_data = []
+
+        # Connect to MySQL database
+        self.db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="root",  
+            database="student"
+        )
 
         self.create_widgets()
 
@@ -46,6 +55,10 @@ class StudentAnalyzer(tk.Tk):
         self.plot_button = tk.Button(left_panel, text="Plot Graph", command=self.plot_grade_graph)
         self.plot_button.grid(row=5, column=0, columnspan=2, pady=10)
 
+        # Status label for feedback
+        self.status_label = tk.Label(left_panel, text="", fg="green")
+        self.status_label.grid(row=6, column=0, columnspan=2)
+
         # Right panel
         right_panel = tk.Frame(self, width=250, height=300)
         right_panel.pack(side="right", padx=10, pady=10)
@@ -58,19 +71,36 @@ class StudentAnalyzer(tk.Tk):
         self.table.pack(fill="both", expand=True)
 
     def add_student(self):
-        name = self.name_entry.get()
-        major = self.major_entry.get()
-        sex = self.sex_entry.get()
-        grade = self.grade_entry.get()
+        try:
+            # Add student to the MySQL database
+            cursor = self.db.cursor()
+            name = self.name_entry.get()
+            major = self.major_entry.get()
+            sex = self.sex_entry.get()
+            grade = self.grade_entry.get()
 
-        if name and major and sex and grade:
-            self.student_data.append(StudentData(name, major, sex, grade))
-            self.table.insert("", "end", values=(name, major, sex, grade))
+            if name and major and sex and grade:
+                # Insert student data into MySQL database
+                sql = "INSERT INTO students (name, major, sex, grade) VALUES (%s, %s, %s, %s)"
+                val = (name, major, sex, grade)
+                cursor.execute(sql, val)
+                self.db.commit()
+            
+                # Add student data to the table
+                self.student_data.append(StudentData(name, major, sex, grade))
+                self.table.insert("", "end", values=(name, major, sex, grade))
 
-            self.name_entry.delete(0, tk.END)
-            self.major_entry.delete(0, tk.END)
-            self.sex_entry.delete(0, tk.END)
-            self.grade_entry.delete(0, tk.END)
+                # Clear entry fields
+                self.name_entry.delete(0, tk.END)
+                self.major_entry.delete(0, tk.END)
+                self.sex_entry.delete(0, tk.END)
+                self.grade_entry.delete(0, tk.END)
+
+                # Update status label
+                self.status_label.config(text="Student added successfully!", fg="green")
+            
+        except (mysql.connector.Error, ValueError) as err:
+            self.status_label.config(text=f"Error: {str(err)}", fg="red")
 
     def plot_grade_graph(self):
         grades = [student.grade for student in self.student_data]
