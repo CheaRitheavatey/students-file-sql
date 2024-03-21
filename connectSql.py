@@ -29,7 +29,7 @@ class StudentAnalyzer(tk.Tk):
 
     def create_widgets(self):
         # Left panel
-        left_panel = tk.Frame(self, width=200, height=300)
+        left_panel = tk.Frame(self, width=200, height=600)
         left_panel.pack(side="left", padx=10, pady=10)
 
         tk.Label(left_panel, text="Name:").grid(row=0, column=0, sticky="e")
@@ -52,15 +52,23 @@ class StudentAnalyzer(tk.Tk):
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
 
         # Plot graph button below left panel
-        self.plot_button = tk.Button(left_panel, text="Plot Graph", command=self.plot_grade_graph)
-        self.plot_button.grid(row=5, column=0, columnspan=2, pady=10)
+        # self.plot_button = tk.Button(left_panel, text="Plot Graph", command=self.plot_grade_graph)
+        # self.plot_button.grid(row=5, column=0, columnspan=2, pady=10)
 
+         # Dropdown menu for selecting graph type
+        self.graph_type_var = tk.StringVar(self)
+        self.graph_type_var.set("Bar Graph")  # Default selection
+        self.graph_dropdown = ttk.Combobox(left_panel, textvariable=self.graph_type_var, values=["Line Graph", "Bar Graph"], state="readonly")
+        self.graph_dropdown.grid(row=5, column=0, columnspan=2, pady=10)
+        self.plot_button = tk.Button(left_panel, text="Plot Graph", command=self.plot_grade_graph)
+        self.plot_button.grid(row=6, column=0, columnspan=2, pady=10)
+       
         # Status label for feedback
         self.status_label = tk.Label(left_panel, text="", fg="green")
-        self.status_label.grid(row=6, column=0, columnspan=2)
+        self.status_label.grid(row=7, column=0, columnspan=2)
 
         # Right panel
-        right_panel = tk.Frame(self, width=250, height=300)
+        right_panel = tk.Frame(self, width=250, height=600)
         right_panel.pack(side="right", padx=10, pady=10)
 
         self.table = ttk.Treeview(right_panel, columns=("Name", "Major", "Sex", "Grade"), show="headings")
