@@ -4,6 +4,7 @@ from tkinter import ttk
 import mysql.connector
 
 class StudentData:
+    # constructor
     def __init__(self, name, major, sex, grade):
         self.name = name
         self.major = major
@@ -11,6 +12,7 @@ class StudentData:
         self.grade = grade
 
 class StudentAnalyzer(tk.Tk):
+    # constructor
     def __init__(self):
         super().__init__()
         self.title("Student Data Analyzer")
@@ -29,25 +31,32 @@ class StudentAnalyzer(tk.Tk):
 
     def create_widgets(self):
         # Left panel
+
+        # create frame
         left_panel = tk.Frame(self, width=200, height=600)
         left_panel.pack(side="left", padx=10, pady=10)
 
+        # name label
         tk.Label(left_panel, text="Name:").grid(row=0, column=0, sticky="e")
         self.name_entry = tk.Entry(left_panel)
         self.name_entry.grid(row=0, column=1, padx=5, pady=5)
 
+        # major label
         tk.Label(left_panel, text="Major:").grid(row=1, column=0, sticky="e")
         self.major_entry = tk.Entry(left_panel)
         self.major_entry.grid(row=1, column=1, padx=5, pady=5)
 
+        # sex label
         tk.Label(left_panel, text="Sex:").grid(row=2, column=0, sticky="e")
         self.sex_entry = tk.Entry(left_panel)
         self.sex_entry.grid(row=2, column=1, padx=5, pady=5)
 
+        # grade label
         tk.Label(left_panel, text="Grade:").grid(row=3, column=0, sticky="e")
         self.grade_entry = tk.Entry(left_panel)
         self.grade_entry.grid(row=3, column=1, padx=5, pady=5)
 
+        # button to add student
         self.add_button = tk.Button(left_panel, text="Add Student", command=self.add_student)
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
 
@@ -55,22 +64,27 @@ class StudentAnalyzer(tk.Tk):
         # self.plot_button = tk.Button(left_panel, text="Plot Graph", command=self.plot_grade_graph)
         # self.plot_button.grid(row=5, column=0, columnspan=2, pady=10)
 
-         # Dropdown menu for selecting graph type
+        # Dropdown menu for selecting graph type
         self.graph_type_var = tk.StringVar(self)
         self.graph_type_var.set("Bar Graph")  # Default selection
+
+        # combobox for dropdown menu
         self.graph_dropdown = ttk.Combobox(left_panel, textvariable=self.graph_type_var, values=["Line Graph", "Bar Graph"], state="readonly")
         self.graph_dropdown.grid(row=5, column=0, columnspan=2, pady=10)
         self.plot_button = tk.Button(left_panel, text="Plot Graph", command=self.plot_grade_graph)
         self.plot_button.grid(row=6, column=0, columnspan=2, pady=10)
        
-        # Status label for feedback
+        # Status label for feedback if it connect to database or not
         self.status_label = tk.Label(left_panel, text="", fg="green")
         self.status_label.grid(row=7, column=0, columnspan=2)
 
         # Right panel
+
+        # create frame
         right_panel = tk.Frame(self, width=250, height=600)
         right_panel.pack(side="right", padx=10, pady=10)
 
+        #treeview = table
         self.table = ttk.Treeview(right_panel, columns=("Name", "Major", "Sex", "Grade"), show="headings")
         self.table.heading("Name", text="Name")
         self.table.heading("Major", text="Major")
@@ -78,6 +92,7 @@ class StudentAnalyzer(tk.Tk):
         self.table.heading("Grade", text="Grade")
         self.table.pack(fill="both", expand=True)
 
+    # button command to add student
     def add_student(self):
         try:
             # Add student to the MySQL database
@@ -109,7 +124,8 @@ class StudentAnalyzer(tk.Tk):
             
         except (mysql.connector.Error, ValueError) as err:
             self.status_label.config(text=f"Error: {str(err)}", fg="red")
-
+    
+    # plot graph button command
     def plot_grade_graph(self):
         grades = [student.grade for student in self.student_data]
         names = [student.name for student in self.student_data]
