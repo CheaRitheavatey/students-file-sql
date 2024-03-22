@@ -31,7 +31,6 @@ class StudentAnalyzer(tk.Tk):
 
     def create_widgets(self):
         # Left panel
-
         # create frame
         left_panel = tk.Frame(self, width=200, height=600)
         left_panel.pack(side="left", padx=10, pady=10)
